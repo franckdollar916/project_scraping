@@ -1,15 +1,15 @@
-# Utilisation de Python 3.9
 FROM python:3.9
 
-# Définition du répertoire de travail
 WORKDIR /app
 
-# Copier les fichiers nécessaires
-COPY requirements.txt .  
-RUN pip install --no-cache-dir -r requirements.txt
+# ✅ Copier uniquement Scraper/ pour éviter les problèmes de chemin
+COPY Scraper /app/
 
-# Copier tout le Scraper/
-COPY . .
+# ✅ Vérifier si requirements.txt existe
+RUN ls /app
 
-# Commande de démarrage
-CMD ["python", "scraper.py"]
+# ✅ Installer les dépendances
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# ✅ Exécuter le scraper
+CMD ["python", "/app/scraper.py"]

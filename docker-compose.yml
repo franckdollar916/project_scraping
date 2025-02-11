@@ -1,9 +1,7 @@
-version: "3.8"
-
 services:
-  postgres_db:
+  database:
     image: postgres:latest
-    container_name: postgres_db
+    container_name: books_db
     restart: always
     environment:
       POSTGRES_DB: books_db
@@ -12,26 +10,37 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - projet_scraping_imdb_postgres_data:/var/lib/postgresql/data
-      - ./Database/schema.sql:/docker-entrypoint-initdb.d/schema.sql  # ✅ Monte le fichier SQL
+      - db_data:/var/lib/postgresql/data
+      - ./Database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
   scraper:
     build: ./Scraper
     container_name: scraper
     depends_on:
-      - postgres_db
-    command: ["python", "scraper.py"]
+      - database
 
   api:
     build: ./API
-    container_name: flask_api
-    depends_on:
-      - postgres_db
+    container_name: api
     ports:
-      - "5000:5000"
-    environment:
-      DATABASE_URL: "postgresql://postgres:franckdollar91@postgres_db:5432/books_db"
-    command: ["python", "api.py"]
+      - "8000:8000"
+    depends_on:
+      - database
+    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 
+  webapp:
+    build: ./WebApp
+    container_name: webapp
+    ports:
+      - "8050:8050"
+    depends_on:
+      - api
+
+  db_initializer:
+    build: ./Database
+    container_name: db_initializer
+    depends_on:
+      - database
+    entrypoint: ["/bin/sh", "-c", "sleep 10 && python /app/database.py"]  # ✅ Attendre 10s avant d’exécuter
 volumes:
-  projet_scraping_imdb_postgres_data:
+  db_data:

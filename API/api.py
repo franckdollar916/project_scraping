@@ -9,7 +9,7 @@ def get_db_connection():
         user="postgres",
         password="franckdollar91",
         host="localhost",
-        port="5432",
+        port="5433",
         client_encoding="UTF8"  # 🔥 Force l'encodage UTF-8
     )
 
