@@ -6,9 +6,9 @@ def connect_db():
         conn = psycopg2.connect(
             dbname="books_db",
             user="postgres",
-            password="franckdollar91",  
-            host="database",  # Utiliser "database" pour Docker sinon "localhost" en local
-            port="5433"
+            password="franckdollar91",
+            host="database",  # Utiliser "database" pour Docker
+            port="5432"
         )
         return conn
     except Exception as e:

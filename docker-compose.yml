@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   database:
     image: postgres:latest
@@ -14,22 +15,28 @@ services:
       - ./Database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
   scraper:
-    build: ./Scraper
+    build:
+      context: .  # Le contexte est le répertoire racine du projet
+      dockerfile: Scraper/Dockerfile
     container_name: scraper
     depends_on:
       - database
 
   api:
-    build: ./API
+    build:
+      context: .
+      dockerfile: API/Dockerfile
     container_name: api
     ports:
       - "8000:8000"
     depends_on:
       - database
-    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
 
   webapp:
-    build: ./WebApp
+    build:
+      context: .
+      dockerfile: WebApp/Dockerfile
     container_name: webapp
     ports:
       - "8050:8050"
@@ -37,10 +44,13 @@ services:
       - api
 
   db_initializer:
-    build: ./Database
+    build:
+      context: .
+      dockerfile: Database/Dockerfile
     container_name: db_initializer
     depends_on:
       - database
-    entrypoint: ["/bin/sh", "-c", "sleep 10 && python /app/database.py"]  # ✅ Attendre 10s avant d’exécuter
+    entrypoint: ["/bin/sh", "-c", "sleep 10 && python /app/database.py"]
+
 volumes:
   db_data:
