@@ -1,7 +1,7 @@
 import sys
 import os
 
-# ✅ Assure-toi que Python trouve le dossier "Database"
+# ✅ Correction de la parenthèse fermante
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from Database.database import insert_books  # ✅ Import corrigé
@@ -9,7 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # ✅ URL à scraper
-URL = "http://books.toscrape.com/catalogue/page-1.html"  # 🔥 Utilise la bonne URL
+URL = "http://books.toscrape.com/catalogue/page-1.html"
 
 def scrape_books():
     """Scrape les livres à partir du site web."""
@@ -20,7 +20,7 @@ def scrape_books():
         soup = BeautifulSoup(response.text, "html.parser")
 
         books = []
-        for book_item in soup.select("article.product_pod"):  # ✅ Sélecteur CSS correct
+        for book_item in soup.select("article.product_pod"):
             title = book_item.select_one("h3 a")["title"].strip()
             price = book_item.select_one(".price_color").text.strip()
             stock = "In stock" if "In stock" in book_item.select_one(".instock.availability").text else "Out of stock"
